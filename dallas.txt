@@ -1,0 +1,25 @@
+SELECT subjects.race, officers.race
+FROM subjects
+JOIN officers
+  ON subjects.case_number = officers.case_number
+LIMIT 20;
+L|L
+L|W
+L|L
+L|W
+B|B
+B|B
+B|B
+B|W
+L|B
+L|W
+B|L
+B|L
+L|B
+L|W
+B|B
+W|W
+B|A
+B|W
+L|L
+L|W
