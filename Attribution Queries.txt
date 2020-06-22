@@ -1,0 +1,157 @@
+#My first touch quiery given to me
+
+WITH first_touch AS (
+    SELECT user_id,
+        MIN(timestamp) as first_touch_at
+    FROM page_visits
+    GROUP BY user_id),
+ft_attr AS
+(SELECT ft.user_id,
+    ft.first_touch_at,
+    pv.utm_source,
+		pv.utm_campaign
+FROM first_touch ft
+JOIN page_visits pv
+    ON ft.user_id = pv.user_id
+    AND ft.first_touch_at = pv.timestamp)
+SELECT ft_attr.utm_source,
+ft_attr.utm_campaign, COUNT(*)
+FROM ft_attr
+GROUP BY 2
+ORDER BY 3 DESC;
+
+
+SELECT COUNT (DISTINCT utm_campaign)
+FROM page_visits;
+
+SELECT COUNT (DISTINCT utm_source)
+FROM page_visits;
+
+SELECT DISTINCT utm_campaign, utm_source
+FROM page_visits;
+
+SELECT DISTINCT page_name
+FROM page_visits;
+
+#Results of previous queries
+
+ft_attr.utm_source	ft_attr.utm_campaign	        COUNT(*)
+medium	           interview-with-cool-tshirts-founder	622
+nytimes	           getting-to-know-cool-tshirts	        612
+buzzfeed	   ten-crazy-cool-tshirts-facts	        576
+google	           cool-tshirts-search	                169
+COUNT (DISTINCT utm_campaign)
+8
+COUNT (DISTINCT utm_source)
+6
+utm_campaign	               utm_source
+getting-to-know-cool-tshirts	nytimes
+weekly-newsletter	         email
+ten-crazy-cool-tshirts-facts	buzzfeed
+retargetting-campaign	         email
+retargetting-ad	                facebook
+interview-with-cool-tshirts-founde  medium
+paid-search	                 google
+cool-tshirts-search	         google
+page_name
+1 - landing_page
+2 - shopping_cart
+3 - checkout
+4 - purchase
+
+
+
+#Last Touch quiery 
+
+WITH last_touch AS (
+    SELECT user_id,
+        MAX (timestamp) as last_touch_at
+    FROM page_visits
+    GROUP BY user_id),
+last_attr AS (
+  SELECT lt.user_id,
+    lt.last_touch_at,
+    pv.utm_source,
+		pv.utm_campaign
+  FROM last_touch AS 'lt'
+  JOIN page_visits AS 'pv'
+    ON lt.user_id = pv.user_id
+    AND lt.last_touch_at = pv.timestamp)
+SELECT la.utm_campaign,
+la.utm_source,
+COUNT (*)
+FROM last_attr AS 'la'
+GROUP BY 1
+ORDER BY 3 DESC;
+
+#Results of last touch query and count
+
+la.utm_campaign	                la.utm_source	                      COUNT (*)
+weekly-newsletter	           email	                        447
+retargetting-ad	                    facebook	                        443
+retargetting-campaign	           email	                        245
+getting-to-know-cool-tshirts	    nytimes	                        232
+ten-crazy-cool-tshirts-facts	    buzzfeed	                          190
+interview-with-cool-tshirts-founder medium	                         184
+paid-search	                     google	                       178
+cool-tshirts-search	                google	                     60
+
+#How many visitors make a purchase
+
+SELECT page_name, COUNT (*)
+FROM page_visits
+GROUP BY 1
+HAVING page_name = '4 - purchase';
+
+#Result of query 
+
+page_name	COUNT (*)
+4 - purchase	361
+
+#last quiery for campaign and purchased results
+
+
+WITH last_touch AS (
+    SELECT user_id,
+        MAX (timestamp) as last_touch_at
+    FROM page_visits
+    GROUP BY user_id),
+last_attr AS (
+  SELECT lt.user_id,
+    lt.last_touch_at,
+    pv.utm_source,
+		pv.utm_campaign,
+    pv.page_name
+  FROM last_touch AS 'lt'
+  JOIN page_visits AS 'pv'
+    ON lt.user_id = pv.user_id
+    AND lt.last_touch_at = pv.timestamp)
+SELECT la.utm_campaign AS campaign,
+la.utm_source AS source,
+COUNT (*)
+FROM last_attr AS 'la'
+WHERE la.page_name = '4 - purchase'
+GROUP BY 1
+ORDER BY 3 DESC;
+
+#Results
+
+campaign	                       source	                                          COUNT (*)
+weekly-newsletter	               email	                                             114
+retargetting-ad                       facebook	                                              112
+retargetting-campaign	               email	                                              53
+paid-search	                          google	                                     52
+getting-to-know-cool-tshirts	         nytimes	                                      9
+ten-crazy-cool-tshirts-facts	           buzzfeed	                                      9
+interview-with-cool-tshirts-founder	medium	                                              7
+cool-tshirts-search	               google	                                              2
+
+#Final thoughts
+
+#If we could only go into 5 differnt adverstisement campaigns, then I would pick the top  4 results in the last quiery to start. 
+as for the fifth option I would go with nytimes due to it having more overall last touches along with more first touches.
+
+
+
+
+
